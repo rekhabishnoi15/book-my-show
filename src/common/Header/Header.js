@@ -3,20 +3,11 @@ import Logo from "../../assets/logo.svg";
 //style
 import "./Header.css";
 //react router dom
-import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 //react-modal
 import Modal from "react-modal";
 //material ui
-import {
-  AppBar,
-  Tabs,
-  Tab,
-  FormControl,
-  InputLabel,
-  Input,
-  TextField,
-} from "@material-ui/core/";
+import { AppBar, Tabs, Tab, FormControl, TextField } from "@material-ui/core/";
 
 const customStyles = {
   content: {
@@ -28,6 +19,8 @@ const customStyles = {
     transform: "translate(-50%, -50%)",
   },
 };
+
+Modal.setAppElement("#root");
 
 function Header() {
   const isLogin = false;
@@ -41,18 +34,13 @@ function Header() {
     firstname: "",
     lastname: "",
     email: "",
-    username: "",
     password: "",
     number: "",
   });
+  const [registrationMessage, setRegistrationMessage] = React.useState("");
 
   function openModal() {
     setIsModalOpen(true);
-  }
-
-  function afterOpenModal() {
-    // references are now sync'd and can be accessed.
-    // subtitle.style.color = "#f00";
   }
 
   function closeModal() {
@@ -72,14 +60,40 @@ function Header() {
     setRegisterState({ ...registerState, [name]: value });
   }
 
-  function loginSubmitHandler(e) {}
+  function loginSubmitHandler(e) {
+    e.preventDefault();
+  }
 
-  function registerSubmitHandler(e) {}
+  async function registerSubmitHandler(e) {
+    e.preventDefault();
+    const payload = {
+      email_address: registerState.email,
+      first_name: registerState.firstname,
+      last_name: registerState.lastname,
+      mobile_number: registerState.number,
+      password: registerState.password,
+    };
+
+    try {
+      const res = await fetch("/api/v1/signup", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      console.log(data);
+      setRegistrationMessage("Registration Successful. Please Login!");
+    } catch (err) {
+      setRegistrationMessage("Something Went Wrong.");
+    }
+  }
 
   return (
     <header className="header">
       <nav className="header__nav">
-        {/* <Logo /> */}
         <img
           src={Logo}
           alt="Logo"
@@ -88,8 +102,6 @@ function Header() {
           fill="#ff7777"
           className="header__logo"
         />
-
-        {/* <Link> */}
 
         <div className="header__btnContainer">
           {!isLogin ? (
@@ -105,12 +117,13 @@ function Header() {
             </React.Fragment>
           )}
         </div>
-        {/* </Link> */}
       </nav>
+
+      {/* model window */}
+
       <AppBar position="static">
         <Modal
           isOpen={isModalOpen}
-          onAfterOpen={afterOpenModal}
           onRequestClose={closeModal}
           style={customStyles}
           contentLabel="Modal"
@@ -156,10 +169,10 @@ function Header() {
           {/* registeration form  */}
 
           {tabNum === 1 && (
-            <form className="headerform">
+            <form onSubmit={registerSubmitHandler} className="headerform">
               <FormControl>
                 <TextField
-                  value={loginState.firstname}
+                  value={registerState.firstname}
                   onChange={(e) =>
                     registerStateHandler("firstname", e.target.value)
                   }
@@ -170,7 +183,7 @@ function Header() {
               </FormControl>
               <FormControl>
                 <TextField
-                  value={loginState.lastname}
+                  value={registerState.lastname}
                   onChange={(e) =>
                     registerStateHandler("lastname", e.target.value)
                   }
@@ -181,18 +194,18 @@ function Header() {
               </FormControl>
               <FormControl>
                 <TextField
-                  value={loginState.username}
+                  value={registerState.username}
                   onChange={(e) =>
-                    registerStateHandler("username", e.target.value)
+                    registerStateHandler("email", e.target.value)
                   }
-                  type="text"
-                  placeholder="Username*"
+                  type="email"
+                  placeholder="Email*"
                   required
                 />
               </FormControl>
               <FormControl>
                 <TextField
-                  value={loginState.password}
+                  value={registerState.password}
                   type="password"
                   placeholder="Password*"
                   onChange={(e) =>
@@ -204,7 +217,7 @@ function Header() {
 
               <FormControl>
                 <TextField
-                  value={loginState.password}
+                  value={registerState.number}
                   type="text"
                   placeholder="Contact No.*"
                   onChange={(e) =>

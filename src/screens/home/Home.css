@@ -1,0 +1,56 @@
+.home__heading {
+  background-color: #ff9999;
+  padding: 8px;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.upcoming__container {
+  display: flex;
+  grid-gap: 3rem;
+  overflow-x: scroll;
+  padding: 10px;
+  padding-bottom: 0px;
+  height: 100%;
+}
+
+.upcoming__movies {
+  list-style-type: none;
+}
+
+.upcoming__movies img {
+  height: 250px;
+}
+
+.filterd {
+  display: flex;
+  grid-gap: 1rem;
+  padding: 10px;
+}
+
+.filterd__container {
+  width: 76%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.filterd__movies {
+  list-style-type: none;
+  cursor: pointer;
+}
+
+.filterd__movies img {
+  height: 350px;
+}
+
+.filterd__card {
+  width: 24%;
+  padding: 20px;
+}
+
+.filterd_form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  grid-gap: 2rem;
+}
