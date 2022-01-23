@@ -30,16 +30,9 @@ function Details() {
   const id = path[path.length - 1];
 
   useEffect(() => {
-    fetch(`https://api.themoviedb.org/3/movie/${id}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MjNlMjA1MmQ5ZjhkOWY5Y2MxYzJmNDdkMTJlNDliZiIsInN1YiI6IjVmY2I0ZGFjMzk0YTg3MDA0MmQ2NzliZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.X-w0XvZZb7Rc7p9bWVwNJswJ48mNieBGRKgkc9wHmgw`,
-      },
-    })
+    fetch(`/api/v1/movies/${id}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
-        // setUpcomingMovies(data.movies);
         setMovieDetail(data);
       });
   }, []);

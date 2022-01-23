@@ -52,9 +52,8 @@ function Home() {
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
-          // setUpcomingMovies(data.movies);
-          setUpcomingMovies(data.results);
-          setFilterMovies(data.results.slice(0, 4));
+          setUpcomingMovies(data.movies || []);
+          setFilterMovies((data.movies && data.movies.slice(0, 4)) || []);
         });
     }
   }, []);
@@ -65,8 +64,6 @@ function Home() {
 
   function submitHandler(e) {
     e.preventDefault();
-
-    console.log(fillterState);
   }
 
   return (

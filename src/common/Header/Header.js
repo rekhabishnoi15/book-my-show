@@ -31,7 +31,7 @@ const customStyles = {
 Modal.setAppElement("#root");
 
 function Header() {
-  const isLogin = true;
+  const [isLogin, setIsLogin] = React.useState(false);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [tabNum, setTabNum] = React.useState(0);
   const [loginState, setLoginState] = React.useState({
@@ -72,18 +72,18 @@ function Header() {
   async function loginSubmitHandler(e) {
     e.preventDefault();
 
-    const res = await fetch("/api/v1/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-      },
-    });
-
-    console.log(res);
-
-    const data = await res.json();
-
-    console.log(data);
+    try {
+      const res = await fetch("/api/v1/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+      });
+      const data = await res.json();
+      setIsLogin(true);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async function registerSubmitHandler(e) {
