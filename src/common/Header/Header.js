@@ -3,11 +3,19 @@ import Logo from "../../assets/logo.svg";
 //style
 import "./Header.css";
 //react router dom
-import Button from "@material-ui/core/Button";
+import { useHistory } from "react-router-dom";
 //react-modal
 import Modal from "react-modal";
 //material ui
-import { AppBar, Tabs, Tab, FormControl, TextField } from "@material-ui/core/";
+import Button from "@material-ui/core/Button";
+import {
+  AppBar,
+  Tabs,
+  Tab,
+  FormControl,
+  TextField,
+  Typography,
+} from "@material-ui/core/";
 
 const customStyles = {
   content: {
@@ -23,7 +31,7 @@ const customStyles = {
 Modal.setAppElement("#root");
 
 function Header() {
-  const isLogin = false;
+  const isLogin = true;
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [tabNum, setTabNum] = React.useState(0);
   const [loginState, setLoginState] = React.useState({
@@ -37,7 +45,8 @@ function Header() {
     password: "",
     number: "",
   });
-  const [registrationMessage, setRegistrationMessage] = React.useState("");
+  const [registrationId, setRegistrationId] = React.useState("");
+  const history = useHistory();
 
   function openModal() {
     setIsModalOpen(true);
@@ -60,8 +69,21 @@ function Header() {
     setRegisterState({ ...registerState, [name]: value });
   }
 
-  function loginSubmitHandler(e) {
+  async function loginSubmitHandler(e) {
     e.preventDefault();
+
+    const res = await fetch("/api/v1/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+    });
+
+    console.log(res);
+
+    const data = await res.json();
+
+    console.log(data);
   }
 
   async function registerSubmitHandler(e) {
@@ -84,11 +106,8 @@ function Header() {
       });
 
       const data = await res.json();
-      console.log(data);
-      setRegistrationMessage("Registration Successful. Please Login!");
-    } catch (err) {
-      setRegistrationMessage("Something Went Wrong.");
-    }
+      setRegistrationId(data.id);
+    } catch (err) {}
   }
 
   return (
@@ -104,17 +123,25 @@ function Header() {
         />
 
         <div className="header__btnContainer">
+          {history.location.pathname.includes("/movie/") && (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                if (isLogin) {
+                  history.push("/book");
+                } else openModal();
+              }}
+            >
+              Book Show
+            </Button>
+          )}
           {!isLogin ? (
             <Button variant="contained" onClick={openModal}>
               Login
             </Button>
           ) : (
-            <React.Fragment>
-              <Button variant="contained" color="primary">
-                Book Show
-              </Button>
-              <Button variant="contained">Logout</Button>
-            </React.Fragment>
+            <Button variant="contained">Logout</Button>
           )}
         </div>
       </nav>
@@ -226,6 +253,10 @@ function Header() {
                   required
                 />
               </FormControl>
+
+              <Typography>
+                {registrationId ? "Registration Successful. Please Login!" : ""}
+              </Typography>
 
               <Button type="submit" variant="contained" color="primary">
                 Register

@@ -1,0 +1,36 @@
+.detail__back {
+  margin: 8px 0px 0px 24px !important;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.detail__back a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.detail__container {
+  display: flex;
+  padding: 10px 20px;
+}
+
+.detail__first {
+  width: 20%;
+}
+
+.details__movie-img {
+  height: 250px;
+}
+
+.detail__second {
+  width: 60%;
+  padding: 0px 20px;
+}
+
+.detail__third {
+  width: 20%;
+}
+
+.detail__star {
+  cursor: pointer;
+}

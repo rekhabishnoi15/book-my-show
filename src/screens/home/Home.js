@@ -13,33 +13,48 @@ import {
   MenuItem,
   Input,
   Button,
+  Checkbox,
 } from "@material-ui/core/";
+//react router dom
+import { Link } from "react-router-dom";
+
+const genreList = [
+  "action",
+  "drama",
+  "romance",
+  "horror",
+  "crime",
+  "thriller",
+  "fantasy",
+];
+
+const artistList = [
+  "leonardo dicarpio",
+  "hrithik roshan",
+  "allu arjun",
+  "vijay deverkonda",
+];
 
 function Home() {
   const [upcomingMovies, setUpcomingMovies] = React.useState([]);
   const [filterMovies, setFilterMovies] = React.useState([]);
   const [fillterState, setFilterState] = React.useState({
     movieName: "",
-    genres: "action",
-    artist: "",
+    genres: [],
+    artist: [],
     releaseStart: "",
     releaseEnd: "",
   });
 
   useEffect(() => {
     if (!upcomingMovies.length) {
-      // fetch("/api/v1/movies?page=1&limit=6")
-      fetch("https://api.themoviedb.org/3/movie/popular", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MjNlMjA1MmQ5ZjhkOWY5Y2MxYzJmNDdkMTJlNDliZiIsInN1YiI6IjVmY2I0ZGFjMzk0YTg3MDA0MmQ2NzliZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.X-w0XvZZb7Rc7p9bWVwNJswJ48mNieBGRKgkc9wHmgw`,
-        },
-      })
+      fetch("/api/v1/movies?page=1&limit=6")
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
           // setUpcomingMovies(data.movies);
           setUpcomingMovies(data.results);
+          setFilterMovies(data.results.slice(0, 4));
         });
     }
   }, []);
@@ -62,10 +77,7 @@ function Home() {
       <section className="upcoming__container">
         {upcomingMovies.map((movie, i) => (
           <GridListTile key={i} className="upcoming__movies">
-            <img
-              src={"https://image.tmdb.org/t/p/w300" + movie.poster_path}
-              alt={movie.title}
-            />
+            <img src={movie.poster_url} alt={movie.title} />
             <GridListTileBar title={movie.title} />
           </GridListTile>
         ))}
@@ -73,28 +85,25 @@ function Home() {
       <section className="filterd">
         <div className="filterd__container">
           {filterMovies.map((movie, i) => (
-            <GridListTile key={i} className="filterd__movies">
-              <img
-                src={"https://image.tmdb.org/t/p/w300" + movie.poster_path}
-                alt={movie.title}
-              />
-              <GridListTileBar
-                title={movie.title}
-                subtitle={
-                  <span>
-                    Release Date:
-                    {new Date(1631685556789).toString().substring(4, 15)}
-                  </span>
-                }
-              />
-            </GridListTile>
+            <Link to={`/movie/${movie.id}`} key={i}>
+              <GridListTile className="filterd__movies">
+                <img src={movie.poster_url} alt={movie.title} />
+                <GridListTileBar
+                  title={movie.title}
+                  subtitle={
+                    <span>
+                      Release Date:
+                      {new Date(movie.release_at).toDateString()}
+                    </span>
+                  }
+                />
+              </GridListTile>
+            </Link>
           ))}
         </div>
 
         <Card className="filterd__card" theme={{}}>
-          <Typography color="primary.light" component="h1">
-            Find Movies BY
-          </Typography>
+          <Typography component="h1">Find Movies BY</Typography>
 
           <form onSubmit={submitHandler} className="filterd_form">
             <FormControl>
@@ -104,21 +113,27 @@ function Home() {
                   filterStateHandler("movieName", e.target.value)
                 }
                 type="text"
-                placeholder="Movie Name"
-                required
+                label="Movie Name"
               />
             </FormControl>
             <FormControl>
               <Select
                 value={fillterState.genres}
                 onChange={(e) => filterStateHandler("genres", e.target.value)}
-                input={<Input name="genres" />}
+                input={<Input placeholder="Genres" />}
                 displayEmpty
-                name="Genre"
+                renderValue={() => "Genres"}
+                multiple
               >
-                <MenuItem value={"action"}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
+                {genreList.map((genre, i) => (
+                  <MenuItem value={genre} key={i} className="text-capitalize">
+                    <Checkbox
+                      checked={fillterState.genres.includes(genre)}
+                      // onChange={() => {}}
+                    />
+                    {genre}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
 
@@ -126,11 +141,17 @@ function Home() {
               <Select
                 value={fillterState.artist}
                 onChange={(e) => filterStateHandler("artist", e.target.value)}
-                input={<Input name="artist" placeholder="Artist" />}
+                input={<Input />}
+                displayEmpty
+                renderValue={() => "Artists"}
+                multiple
               >
-                <MenuItem value={"action"}>Action</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
+                {artistList.map((artist, i) => (
+                  <MenuItem value={artist} key={i} className="text-capitalize">
+                    <Checkbox checked={fillterState.artist.includes(artist)} />
+                    {artist}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
 
@@ -139,7 +160,6 @@ function Home() {
                 id="date"
                 label="Release Date Start"
                 type="date"
-                defaultValue="2017-05-24"
                 value={fillterState.releaseStart}
                 onChange={(e) =>
                   filterStateHandler("releaseStart", e.target.value)
@@ -158,7 +178,6 @@ function Home() {
                 onChange={(e) =>
                   filterStateHandler("releaseEnd", e.target.value)
                 }
-                defaultValue="2017-05-24"
                 InputLabelProps={{
                   shrink: true,
                 }}
